@@ -39,7 +39,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/home", "/register", "/login", "/test-role","/encode-password").permitAll()
+            .requestMatchers("/","/home", "/register", "/login", "/test-role","/encode-password").permitAll()
             .requestMatchers("/student/**").hasAnyAuthority("STUDENT", "ROLE_STUDENT")
             .requestMatchers("/instructor/**","/instructor/**", "/courses/**").hasAnyAuthority("INSTRUCTOR", "ROLE_INSTRUCTOR")
             .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
@@ -48,6 +48,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .formLogin(form -> form
             .loginPage("/login")
             .loginProcessingUrl("/login")
+            .defaultSuccessUrl("/home", true)
             .usernameParameter("email")
             .passwordParameter("password")
             .successHandler(successHandler)  // Custom success handler
