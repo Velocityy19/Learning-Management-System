@@ -35,7 +35,13 @@ public class AuthController {
     RolesRepository rolesRepository;
 
     // Home page
-    @GetMapping({"/", "/home"})
+    @GetMapping( "/")
+    public String redirectHome() {
+        return "home";
+    }
+
+    // Home page
+    @GetMapping( "/home")
     public String home() {
         return "home";
     }
