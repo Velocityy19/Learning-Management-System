@@ -30,8 +30,9 @@ public class UsersService implements UserDetailsService {
     
     // Create new User
     public void createUser(Users user) {
-        user.setUserPassword(passwordEncoder.encode(getUserPassword(user.getUserEmail())));
+       user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
         userRepository.save(user);
+
     }
 
     public Users registerUser(Users user) {
