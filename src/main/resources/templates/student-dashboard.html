@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #0f172a;
+        color: #e2e8f0;
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 270px;
+        background-color: #111827;
+        display: flex;
+        flex-direction: column;
+        border-right: 2px solid #27f5a6;
+      }
+
+      .profile {
+        text-align: center;
+        padding: 25px 20px;
+        border-bottom: 1px solid #1f2937;
+      }
+
+      .profile-img-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 12px;
+      }
+
+      .profile img {
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        border: 3px solid #27f5a6;
+      }
+
+      .online-status {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        width: 14px;
+        height: 14px;
+        background: #27f5a6;
+        border-radius: 50%;
+        border: 2px solid #111827;
+      }
+
+      .profile h5 {
+        margin: 0;
+        color: #27f5a6;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+
+      .profile p {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        margin: 3px 0 0;
+      }
+
+      .nav-links {
+        flex-grow: 1;
+        padding: 20px 0;
+      }
+
+      .nav-links a {
+        display: flex;
+        align-items: center;
+        padding: 14px 30px;
+        color: #e2e8f0;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .nav-links a .icon {
+        margin-right: 12px;
+        font-size: 1.15rem;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #27f5a6;
+      }
+
+      .nav-links a.active {
+        background-color: #27f5a6;
+        color: #0f172a;
+      }
+
+      .logout-section {
+        padding: 20px;
+        border-top: 1px solid #1f2937;
+      }
+
+      .logout-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 2px solid #27f5a6;
+        color: #27f5a6;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        background: #27f5a6;
+        color: #0f172a;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex-grow: 1;
+        padding: 30px;
+        overflow-y: auto;
+        background-color: #0f172a;
+      }
+
+      .main-content::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .main-content::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+
+      .main-content::-webkit-scrollbar-thumb {
+        background: #27f5a6;
+        border-radius: 10px;
+      }
+
+      .dashboard-header {
+        margin-bottom: 30px;
+      }
+
+      .dashboard-header h2 {
+        font-weight: 700;
+        font-size: 1.9rem;
+        color: #27f5a6;
+      }
+
+      .dashboard-header p {
+        color: #94a3b8;
+        margin-top: 5px;
+        font-size: 0.95rem;
+      }
+
+      /* Cards */
+      .card-custom {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+
+      .card-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15);
+        border-color: #27f5a6;
+      }
+
+      .card-custom h5 {
+        color: #27f5a6;
+        margin-bottom: 20px;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .stat-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: #27f5a6;
+        box-shadow: 0 6px 15px rgba(34, 197, 94, 0.2);
+      }
+
+      .stat-card h3 {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: #27f5a6;
+        margin-bottom: 5px;
+      }
+
+      .stat-card p {
+        color: #94a3b8;
+        font-size: 0.88rem;
+      }
+
+      /* Progress Chart */
+      .chart-wrapper {
+        position: relative;
+        width: 230px;
+        height: 230px;
+        margin: 0 auto;
+      }
+
+      .chart-center-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .chart-center-text h2 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #27f5a6;
+        margin: 0;
+      }
+
+      .chart-center-text p {
+        color: #d8dadc;
+        font-size: 0.9rem;
+      }
+
+      /* Activity List */
+      .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 14px;
+        background-color: #0f172a;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+      }
+
+      .activity-item:hover {
+        background-color: rgba(34, 197, 94, 0.1);
+        transform: translateX(3px);
+      }
+
+      .activity-icon {
+        width: 38px;
+        height: 38px;
+        background-color: #011411;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 14px;
+        font-size: 1.1rem;
+      }
+
+      .activity-text h6 {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 0.92rem;
+        font-weight: 500;
+      }
+
+      .activity-text p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.8rem;
+      }
+
+      /* Course Cards */
+      .course-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+
+      .course-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(34, 197, 94, 0.15);
+        border-color: #27f5a6;
+      }
+
+      .course-card h6 {
+        color: #27f5a6;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+      }
+
+      .course-card p {
+        color: #94a3b8;
+        font-size: 0.88rem;
+        margin-bottom: 15px;
+      }
+
+      .btn-custom {
+        background-color: #27f5a6;
+        border: none;
+        color: #0f172a;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-custom:hover {
+        background-color: #22c55e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        color: #0f172a;
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #27f5a6;
+        color: #27f5a6;
+        padding: 9px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .btn-outline:hover {
+        background: #27f5a6;
+        color: #0f172a;
+      }
+
+      /* Assignment Card */
+      .assignment-card {
+        background-color: #1e293b;
+        border-left: 4px solid #27f5a6;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+      }
+
+      .assignment-card:hover {
+        background-color: rgba(34, 197, 94, 0.05);
+        transform: translateX(4px);
+      }
+
+      .assignment-card h6 {
+        color: #e2e8f0;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .assignment-card p {
+        color: #94a3b8;
+        font-size: 0.88rem;
+        margin-bottom: 12px;
+      }
+
+      .badge-custom {
+        display: inline-block;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .badge-pending {
+        background-color: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid #fbbf24;
+      }
+
+      .badge-completed {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #27f5a6;
+        border: 1px solid #27f5a6;
+      }
+
+      /* Query Section */
+      .query-input {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        color: #e2e8f0;
+        padding: 12px;
+        resize: none;
+        width: 100%;
+      }
+
+      .query-input:focus {
+        outline: none;
+        border-color: #27f5a6;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+      }
+
+      /* Tab Content */
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.4s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Upcoming Events */
+      .event-item {
+        background-color: #0f172a;
+        border-left: 3px solid #27f5a6;
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+      }
+
+      .event-item:hover {
+        background-color: rgba(34, 197, 94, 0.05);
+      }
+
+      .event-item h6 {
+        color: #27f5a6;
+        margin-bottom: 4px;
+        font-size: 0.92rem;
+        font-weight: 500;
+      }
+
+      .event-item p {
+        color: #94a3b8;
+        font-size: 0.82rem;
+        margin: 0;
+      }
+
+      .progress {
+        background-color: #0f172a;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        background-color: #27f5a6;
+      }
+
+      .empty-message {
+        text-align: center;
+        padding: 30px;
+        color: #64748b;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="profile">
+        <div class="profile-img-wrapper">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="Profile"
+          />
+          <div class="online-status"></div>
+        </div>
+        <h5 th:text="${user != null ? user.userName : 'Student'}">Student</h5>
+        <p th:text="${user != null ? user.userEmail : 'student@email.com'}">
+          student@email.com
+        </p>
+      </div>
+
+      <div class="nav-links">
+        <a href="#" class="active" onclick="showTab('home')">
+          <span class="icon">🏠</span> Home
+        </a>
+        <a href="#" onclick="showTab('courses')">
+          <span class="icon">📚</span> Courses
+        </a>
+        <a href="#" onclick="showTab('assignments')">
+          <span class="icon">📝</span> Assignments
+        </a>
+        <a href="#" onclick="showTab('queries')">
+          <span class="icon">💬</span> Queries
+        </a>
+      </div>
+
+      <div class="logout-section">
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Home Tab -->
+      <div id="home" class="tab-content active">
+        <div class="dashboard-header">
+          <h2>
+            Welcome back,
+            <span th:text="${user != null ? user.userName : 'Student'}"
+              >Student</span
+            >! 👋
+          </h2>
+          <p>Here's what's happening with your learning today</p>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <div class="stat-card">
+              <h3 th:text="${totalEnrolled != null ? totalEnrolled : 0}">0</h3>
+              <p>Courses Enrolled</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <h3 th:text="${completedCourses != null ? completedCourses : 0}">0</h3>
+              <p>Completed</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <h3 th:text="${inProgressCourses != null ? inProgressCourses : 0}">0</h3>
+              <p>In Progress</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card">
+              <h3 th:text="${availableCoursesCount != null ? availableCoursesCount : 0}">0</h3>
+              <p>Available Courses</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Cards Row -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card-custom">
+              <h5>Learning Progress</h5>
+              <div class="chart-wrapper">
+                <canvas id="progressChart"></canvas>
+                <div class="chart-center-text">
+                  <h2 th:text="${overallProgress != null ? overallProgress + '%' : '0%'}">0%</h2>
+                  <p>Complete</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card-custom">
+              <h5>Recent Activity</h5>
+              
+              <!-- Dynamic Recent Activities -->
+              <div th:if="${recentActivities != null && !recentActivities.isEmpty()}">
+                <div class="activity-item" th:each="activity : ${recentActivities}">
+                  <div class="activity-icon" th:text="${activity.icon}">✅</div>
+                  <div class="activity-text">
+                    <h6 th:text="${activity.title}">Activity Title</h6>
+                    <p th:text="${activity.timeAgo}">Time ago</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div th:if="${recentActivities == null || recentActivities.isEmpty()}" class="empty-message">
+                <p>No recent activities yet. Start learning to see your progress!</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card-custom">
+              <h5>Upcoming Events</h5>
+              
+              <!-- Dynamic Upcoming Events -->
+              <div th:if="${upcomingEvents != null && !upcomingEvents.isEmpty()}">
+                <div class="event-item" th:each="event : ${upcomingEvents}">
+                  <h6 th:text="${event.title}">Event Title</h6>
+                  <p th:text="'📅 ' + ${event.dateTime}">Date Time</p>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div th:if="${upcomingEvents == null || upcomingEvents.isEmpty()}" class="empty-message">
+                <p>No upcoming events scheduled.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Continue Learning Section -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="card-custom">
+              <h5>Continue Learning</h5>
+              
+              <!-- Dynamic Enrolled Courses -->
+              <div th:if="${enrolledCourses != null && !enrolledCourses.isEmpty()}">
+                <div class="row">
+                  <div class="col-md-6" th:each="course : ${enrolledCourses}">
+                    <div class="course-card">
+                      <h6 th:text="${course.courseName}">Course Name</h6>
+                      <p th:text="${course.courseDescription}">Course Description</p>
+                      <div class="progress mb-3" style="height: 8px">
+                        <div class="progress-bar" 
+                             th:style="'width: ' + ${course.progress != null ? course.progress : 0} + '%'"></div>
+                      </div>
+                      <p style="color: #94a3b8; font-size: 0.85rem;">
+                        Progress: <span th:text="${course.progress != null ? course.progress : 0}">0</span>% Complete
+                      </p>
+                      <a th:href="@{/student/course/{id}(id=${course.courseId})}" class="btn-custom">Continue</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div th:if="${enrolledCourses == null || enrolledCourses.isEmpty()}" class="empty-message">
+                <p>You haven't enrolled in any courses yet. Visit the Courses tab to explore available courses!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Tab -->
+      <div id="courses" class="tab-content">
+        <div class="dashboard-header">
+          <h2>My Courses</h2>
+          <p>Explore and manage your learning journey</p>
+        </div>
+
+        <h5 class="mb-3" style="color: #27f5a6">Available Courses</h5>
+        
+        <div th:if="${availableCourses == null || availableCourses.isEmpty()}" 
+             class="alert alert-info" 
+             style="background-color: rgba(34, 197, 94, 0.15); color: #27f5a6; border: 1px solid #27f5a6;">
+          No available courses at the moment.
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6" th:each="course : ${availableCourses}">
+            <div class="course-card">
+              <h6 th:text="${course.courseName}">Course Name</h6>
+              <p th:text="${course.courseDescription}">Course Description</p>
+              <p style="color: #94a3b8; font-size: 0.85rem;">
+                <strong>Instructor:</strong> 
+                <span th:text="${course.instructor != null ? course.instructor.userName : 'N/A'}">Instructor</span>
+              </p>
+              <form th:action="@{/student/enroll}" method="post" style="display:inline;">
+                <input type="hidden" name="courseId" th:value="${course.courseId}">
+                <button type="submit" class="btn-outline">Enroll Now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <h5 class="mt-4 mb-3" style="color: #27f5a6">Enrolled Courses</h5>
+        
+        <div th:if="${enrolledCourses == null || enrolledCourses.isEmpty()}" 
+             class="alert alert-info" 
+             style="background-color: rgba(34, 197, 94, 0.15); color: #27f5a6; border: 1px solid #27f5a6;">
+          You haven't enrolled in any courses yet.
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6" th:each="course : ${enrolledCourses}">
+            <div class="course-card">
+              <h6 th:text="${course.courseName}">Course Name</h6>
+              <p th:text="${course.courseDescription}">Course Description</p>
+              <div class="progress mb-3" style="height: 8px">
+                <div class="progress-bar" 
+                     th:style="'width: ' + ${course.progress != null ? course.progress : 0} + '%'"></div>
+              </div>
+              <p style="color: #94a3b8; font-size: 0.85rem;">
+                Progress: <span th:text="${course.progress != null ? course.progress : 0}">0</span>% Complete
+              </p>
+              <a th:href="@{/student/course/{id}(id=${course.courseId})}" 
+                 class="btn-custom">Continue Learning</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignments Tab -->
+      <div id="assignments" class="tab-content">
+        <div class="dashboard-header">
+          <h2>Assignments</h2>
+          <p>Track your pending and completed assignments</p>
+        </div>
+
+        <h5 class="mb-3" style="color: #fbbf24">Pending Assignments</h5>
+        <div class="empty-message">
+          <p>Assignment feature coming soon!</p>
+        </div>
+
+        <h5 class="mt-4 mb-3" style="color: #27f5a6">Completed Assignments</h5>
+        <div class="empty-message">
+          <p>No completed assignments yet.</p>
+        </div>
+      </div>
+
+      <!-- Queries Tab -->
+      <!-- Queries Tab -->
+<div id="queries" class="tab-content">
+    <div class="dashboard-header">
+        <h2>Ask Questions</h2>
+        <p>Get help from instructors and peers</p>
+    </div>
+
+    <div class="card-custom">
+        <h5>Submit a Query</h5>
+        <form id="queryForm" onsubmit="submitQuery(event)">
+            <div class="mb-3">
+                <label class="form-label" style="color: #94a3b8">Course</label>
+                <select class="query-input" id="queryCourse" required>
+                    <option value="">Select Course</option>
+                    <option th:each="course : ${enrolledCourses}" 
+                            th:value="${course.courseId}" 
+                            th:text="${course.courseName}">Course Name</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" style="color: #94a3b8">Your Question</label>
+                <textarea
+                    class="query-input"
+                    id="queryQuestion"
+                    rows="4"
+                    placeholder="Describe your question in detail..."
+                    required
+                ></textarea>
+            </div>
+            <button type="submit" class="btn-custom">Submit Query</button>
+        </form>
+    </div>
+
+    <script>
+      // Dynamic Progress Chart
+      const overallProgress = parseInt(document.querySelector('.chart-center-text h2').textContent) || 0;
+      const ctx = document.getElementById("progressChart").getContext("2d");
+      new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          datasets: [
+            {
+              data: [overallProgress, 100 - overallProgress],
+              backgroundColor: ["#27f5a6", "#011411"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          cutout: "78%",
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+          },
+        },
+      });
+
+      // Tab Navigation
+      function showTab(tabId) {
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.getElementById(tabId).classList.add("active");
+        document.querySelectorAll(".nav-links a").forEach((link) => {
+          link.classList.remove("active");
+        });
+        event.target.closest("a").classList.add("active");
+      }
+
+
+      // Submit Query Function
+function submitQuery(event) {
+    event.preventDefault(); // Prevent form submission
+    
+    const course = document.getElementById('queryCourse').value;
+    const question = document.getElementById('queryQuestion').value;
+    
+    if (!course) {
+        alert('Please select a course');
+        return;
+    }
+    
+    if (!question.trim()) {
+        alert('Please enter your question');
+        return;
+    }
+    
+    // Show success message
+    alert('✅ Query submitted successfully! Your instructor will respond soon.');
+    
+    // Clear the form
+    document.getElementById('queryForm').reset();
+}
+    </script>
+  </body>
+</html>

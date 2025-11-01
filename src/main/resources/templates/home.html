@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduLearn - Learning Management System</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: #f0f0f0;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        background: #111;
+        padding: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .logo {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #00ff99;
+        text-decoration: none;
+      }
+
+      .logo:hover {
+        color: #00cc7a;
+      }
+
+      .sign-in-btn {
+        background: #00ff99;
+        color: #000;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+      }
+
+      .sign-in-btn:hover {
+        background: #00cc7a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 255, 153, 0.3);
+        color: #000;
+      }
+
+      /* Hero Section */
+      .hero-section {
+        padding: 6rem 0 4rem;
+        text-align: center;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #f8f9fa;
+        margin-bottom: 2rem;
+      }
+
+      /* Search Box */
+      .search-container {
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        position: relative;
+      }
+
+      .search-box {
+        width: 100%;
+        padding: 1rem 3.5rem 1rem 1.5rem;
+        border: 2px solid #333;
+        border-radius: 50px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: #1e1e1e;
+        color: #f8f9fa;
+      }
+
+      .search-box:focus {
+        outline: none;
+        border-color: #00ff99;
+        box-shadow: 0 4px 20px rgba(0, 255, 153, 0.1);
+      }
+
+      .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #00ff99;
+        border: none;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        color: #000;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .search-btn:hover {
+        background: #00cc7a;
+        transform: translateY(-50%) scale(1.05);
+      }
+
+      /* Quick Links */
+      .quick-links {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 4rem;
+      }
+
+      .quick-link-btn {
+        padding: 0.7rem 1.8rem;
+        background: #1e1e1e;
+        border: 2px solid #333;
+        border-radius: 25px;
+        color: #f0f0f0;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .quick-link-btn:hover {
+        border-color: #00ff99;
+        color: #00ff99;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 255, 153, 0.1);
+      }
+
+      /* Features Grid */
+      .features-section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 1rem;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .feature-card {
+        background: #1e1e1e;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 255, 153, 0.15);
+      }
+
+      .feature-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #00ff99;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-desc {
+        color: #ccc;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      /* Modal tweaks */
+      .modal-content {
+        background: #1e1e1e;
+        color: #f8f9fa;
+      }
+
+      .form-control {
+        background: #121212;
+        color: #fff;
+        border: 1px solid #333;
+      }
+
+      .form-control:focus {
+        background: #121212;
+        border-color: #00ff99;
+        box-shadow: 0 0 5px rgba(0, 255, 153, 0.3);
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header with Navigation -->
+    <header class="header">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="#" class="logo">📚 EduSphere</a>
+
+          <a
+            href="#"
+            class="sign-in-btn"
+            data-bs-toggle="modal"
+            data-bs-target="#authModal"
+            >Sign In</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <h1 class="hero-title">Please Login/Register to access</h1>
+
+        <!-- Search Box -->
+        <div class="search-container">
+          <form th:action="@{/search}" method="get">
+            <input
+              type="text"
+              class="search-box"
+              name="query"
+              placeholder="Search for courses, tutorials, topics..."
+              autocomplete="off"
+            />
+            <button type="submit" class="search-btn">
+              <svg
+                width="20"
+                height="20"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                />
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+          <a href="#" class="quick-link-btn">Programming</a>
+          <a href="#" class="quick-link-btn">Web Development</a>
+          <a href="#" class="quick-link-btn">Data Science</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎓</div>
+          <h3 class="feature-title">Quality Courses</h3>
+          <p class="feature-desc">
+            Access curated learning materials and structured courses
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Track Progress</h3>
+          <p class="feature-desc">
+            Monitor your learning journey with detailed analytics
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3 class="feature-title">Earn Certificates</h3>
+          <p class="feature-desc">
+            Get recognized with completion certificates
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+    <span th:text="${successMessage}"></span>
+    </div>
+
+    <!-- Sign In/Register Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none">
+          <div class="modal-body p-4">
+            <button
+              type="button"
+              class="btn-close float-end"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+            <div class="clearfix mb-4"></div>
+
+            <h3 class="text-center mb-4">Welcome to EduLearn</h3>
+
+            <!-- Tabs -->
+            <ul
+              class="nav nav-pills nav-fill mb-4"
+              id="authTabs"
+              role="tablist"
+            >
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="login-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#login"
+                  type="button"
+                  style="border-radius: 10px"
+                >
+                  Login
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="register-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#register"
+                  type="button"
+                  style="border-radius: 10px"
+                >
+                  Register
+                </button>
+              </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+              <!-- Login Form -->
+              <div class="tab-pane fade show active" id="login" role="tabpanel">
+                <form th:action="@{/login}" method="post">
+                  <div class="mb-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="loginEmail"
+                      name="email"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="loginPassword" class="form-label"
+                      >Password</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="loginPassword"
+                      name="password"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="rememberMe"
+                      name="rememberMe"
+                    />
+                    <label class="form-check-label" for="rememberMe"
+                      >Remember me</label
+                    >
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn w-100"
+                    style="
+                      background: #00897b;
+                      color: white;
+                      padding: 0.75rem;
+                      border-radius: 10px;
+                      font-weight: 600;
+                    "
+                  >
+                    Login
+                  </button>
+                  <div class="text-center mt-3">
+                    <a href="#" style="color: #00897b; text-decoration: none"
+                      >Forgot Password?</a
+                    >
+                  </div>
+                </form>
+                <div th:if="${error}" class="alert alert-danger text-center mt-3">
+    <span th:text="${error}"></span>
+</div>
+
+              </div>
+
+              <!-- Register Form -->
+              <div class="tab-pane fade" id="register" role="tabpanel">
+                <form th:action="@{/register}" method="post">
+                  <div class="mb-3">
+                    <label for="registerName" class="form-label"
+                      >Full Name</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="registerName"
+                      name="userName"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="registerEmail" class="form-label">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="registerEmail"
+                      name="userEmail"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="registerPassword" class="form-label"
+                      >Password</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="registerPassword"
+                      name="userPassword"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label for="confirmPassword" class="form-label"
+                      >Confirm Password</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      required
+                      style="border-radius: 10px; padding: 0.75rem"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn w-100"
+                    style="
+                      background: #00897b;
+                      color: white;
+                      padding: 0.75rem;
+                      border-radius: 10px;
+                      font-weight: 600;
+                    "
+                  >
+                    Create Account
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Activate login tab if URL hash or server says so
+  const activeTab = /*[[${activeTab}]]*/ 'none';
+  if (window.location.hash === "#login" || activeTab === "login") {
+    const loginTab = document.querySelector('[data-bs-target="#login"]');
+    if (loginTab) {
+      const tab = new bootstrap.Tab(loginTab);
+      tab.show();
+    }
+  }
+});
+</script>
+
+
+</body>
+</html>
