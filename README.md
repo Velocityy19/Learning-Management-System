@@ -79,7 +79,7 @@ Email: john@edu.com
 Password: admin123
 
 Admin Login:
-Email: admin@example.com
+Email: admin@edu.com
 Password: admin123
 
 
