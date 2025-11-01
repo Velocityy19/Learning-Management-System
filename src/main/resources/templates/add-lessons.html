@@ -274,12 +274,17 @@
         e.preventDefault();
         
         const fileInput = document.getElementById('lessonFile');
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            showAlert('⚠️ Please select a file to upload', 'error');
-            return;
-        }
+const file = fileInput.files[0];
+
+if (!file) {
+  // No file selected
+  console.log("No file selected. Proceeding without upload...");
+  uploadLessonWithoutFile(); 
+  return;
+}
+
+// If file exists, continue upload logic
+uploadFile(file);
 
         const courseId = document.getElementById('courseId').value;
         const lessonTitle = document.getElementById('lessonTitle').value;
