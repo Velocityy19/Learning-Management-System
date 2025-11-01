@@ -1,0 +1,25 @@
+#  API Endpoints Documentation
+
+Base URL: https://your-app-name.up.railway.app
+
+## 🔹 Authentication
+POST   /login           → Authenticate user and redirect based on role
+
+## 🔹 Students
+GET    /student/dashboard       → View student dashboard
+GET    /student/courses         → View all enrolled courses
+POST   /student/enroll/{id}     → Enroll in a specific course
+
+## 🔹 Instructors
+GET    /instructor/dashboard    → View instructor dashboard
+POST   /instructor/add-course   → Add new course
+POST   /instructor/add-lesson   → Add lessons (upload temporarily disabled due to Firebase issue)
+
+## 🔹 Admin
+GET    /admin/dashboard         → View admin dashboard
+GET    /admin/users             → View all registered users
+
+##  Note:
+- Lesson upload temporarily disabled due to Firebase integration issue.
+- New users are registered as STUDENT by default.
+- Use predefined credentials for Admin and Instructor login.
