@@ -23,3 +23,5 @@ GET    /admin/users             → View all registered users
 - Lesson upload temporarily disabled due to Firebase integration issue.
 - New users are registered as STUDENT by default.
 - Use predefined credentials for Admin and Instructor login.
+Instructor Login: Email: john@edu.com Password: admin123
+Admin Login: Email: admin@example.com Password: admin123
