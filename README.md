@@ -54,7 +54,7 @@
     Future updates may include Firebase or AWS S3 integration once payment setup is resolved.
 
 
-7. uture Enhancements
+7. Future Enhancements
 
     Integrate Firebase Storage or AWS S3 for file uploads
 
