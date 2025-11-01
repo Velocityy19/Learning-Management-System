@@ -91,11 +91,10 @@ public class UsersService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    // Load user by username (email) for authentication
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+   @Override
+public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     Users user = userRepository.findByUserEmail(email);
-    
+
     if (user == null) {
         throw new UsernameNotFoundException("User not found with email: " + email);
     }
@@ -104,9 +103,17 @@ public class UsersService implements UserDetailsService {
         throw new UsernameNotFoundException("User has no role assigned");
     }
 
+    // ✅ Prefix with ROLE_
+    String roleName = user.getRole().getRoleName();
+    if (!roleName.startsWith("ROLE_")) {
+        roleName = "ROLE_" + roleName;
+    }
+
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+    authorities.add(new SimpleGrantedAuthority(roleName));
+
     return new User(user.getUserEmail(), user.getUserPassword(), authorities);
 }
+
 
 }
