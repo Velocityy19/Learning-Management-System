@@ -51,7 +51,7 @@ public class AuthController {
         try {
             usersService.registerUser(user);
             model.addAttribute("message", "Registration successful! Please login.");
-            return "redirect:/home?success=true";
+            return "redirect:/login?success=true";
         } catch (Exception e) {
             model.addAttribute("error", "Registration failed: " + e.getMessage());
             return "redirect:/home?error=true";
