@@ -66,3 +66,24 @@
 8. Author:
     Developed by: Vasanth M
     GitHub: Velocityy19
+
+=========IMPORTANT NOTICE=========================================================
+Default Role Assignment:
+Any user who registers through the home page is automatically assigned the Student role by default.
+
+Admin & Instructor Access:
+To access the Instructor and Admin dashboards, please use the following pre-configured credentials:
+
+Instructor Login:
+Email: john@edu.com
+Password: admin123
+
+Admin Login:
+Email: admin@example.com
+Password: admin123
+
+
+Lesson Upload Notice:
+Due to an issue with Firebase integration during deployment, the file upload (lesson upload) feature is temporarily disabled.
+Other functionalities, such as registration, login, and dashboard navigation, remain fully functional.
+======================================================================================
